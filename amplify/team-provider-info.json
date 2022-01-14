@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-taskclock-dev-212944-authRole",
+      "UnauthRoleArn": "arn:aws:iam::880282250354:role/amplify-taskclock-dev-212944-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::880282250354:role/amplify-taskclock-dev-212944-authRole",
+      "Region": "eu-west-2",
+      "DeploymentBucketName": "amplify-taskclock-dev-212944-deployment",
+      "UnauthRoleName": "amplify-taskclock-dev-212944-unauthRole",
+      "StackName": "amplify-taskclock-dev-212944",
+      "StackId": "arn:aws:cloudformation:eu-west-2:880282250354:stack/amplify-taskclock-dev-212944/19acaaa0-7581-11ec-b3b8-0a052b47d602",
+      "AmplifyAppId": "do082f0aptgog"
+    }
+  }
+}
