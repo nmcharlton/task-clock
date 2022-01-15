@@ -1,6 +1,7 @@
 import MessageListItem from '../components/MessageListItem';
 import { useState } from 'react';
-import { Message, getMessages } from '../data/messages';
+import { Session } from '../models';
+import { getSessions } from '../data/sessions';
 import {
   IonContent,
   IonHeader,
@@ -16,11 +17,12 @@ import './Home.css';
 
 const Home: React.FC = () => {
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
 
   useIonViewWillEnter(() => {
-    const msgs = getMessages();
-    setMessages(msgs);
+    getSessions().then((data) => {
+      setSessions(data);
+    });
   });
 
   const refresh = (e: CustomEvent) => {
@@ -50,7 +52,7 @@ const Home: React.FC = () => {
         </IonHeader>
 
         <IonList>
-          {messages.map(m => <MessageListItem key={m.id} message={m} />)}
+          {sessions.map(s => <MessageListItem key={s.id} message={s} />)}
         </IonList>
       </IonContent>
     </IonPage>

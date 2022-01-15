@@ -4,7 +4,7 @@
       "addmissingownerfields": true,
       "validatetypenamereservedwords": true,
       "useexperimentalpipelinedtransformer": false,
-      "enableiterativegsiupdates": false,
+      "enableiterativegsiupdates": true,
       "secondarykeyasgsi": true,
       "skipoverridemutationinputtypes": true
     },
@@ -23,6 +23,9 @@
     },
     "appsync": {
       "generategraphqlpermissions": true
+    },
+    "project": {
+      "overrides": true
     }
   }
 }

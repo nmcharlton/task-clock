@@ -1,0 +1,6 @@
+type Session @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  start_time: AWSDateTime!
+  end_time: AWSDateTime
+  task: String
+}
