@@ -1,10 +1,13 @@
 import SessionListItem from '../components/SessionListItem';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Session } from '../models';
 import { getSessions, startSession, endSession } from '../data/sessions';
 import {
+  IonButton,
   IonContent,
   IonHeader,
+  IonInput,
+  IonItem,
   IonList,
   IonPage,
   IonRefresher,
@@ -19,7 +22,26 @@ import { DateTime } from 'luxon';
 const Home: React.FC = () => {
 
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [groups, setGroups] = useState<Session[][]>([]);
   const [now, setNow] = useState<DateTime>(DateTime.now());
+  const [newTaskName, setNewTaskName] = useState<string>('');
+
+  useEffect(() => {
+    const tasks = sessions.reduce((output: string[], s) => {
+      if (s?.task && output.indexOf(s.task) === -1) {
+        output.push(s.task);
+      }
+      return output;
+    }, []);
+
+    setGroups(Object.values(sessions.reduce((output: Session[][], s) => {
+      const index = tasks.indexOf(s.task as any);
+      if (index >= 0) {
+        output[index].push(s);
+      }
+      return output;
+    }, tasks.map(() => []))));
+  }, [sessions]);
 
   useIonViewWillEnter(() => {
     refreshSessions();
@@ -45,7 +67,7 @@ const Home: React.FC = () => {
     });
   }
 
-  const handleSessionClick = (session : Session) => {
+  const handleSessionClick = (session: Session) => {
     let fn = Promise.resolve();
     if (session.end) {
       startSession(session.task);
@@ -56,6 +78,11 @@ const Home: React.FC = () => {
     fn.then(() => {
       refreshSessions();
     })
+  }
+
+  const handleStartNewTask = () => {
+    startSession(newTaskName).then(() => refreshSessions());
+    setNewTaskName('');
   }
 
   return (
@@ -79,7 +106,15 @@ const Home: React.FC = () => {
         </IonHeader>
 
         <IonList>
-          {sessions.map(s => <SessionListItem key={s.id} session={s} now={now} onClick={() => handleSessionClick(s)} />)}
+          <form onSubmit={(e) => {e.preventDefault(); handleStartNewTask(); return false;}}>
+            <IonItem>
+              <IonInput value={newTaskName} slot='start' type='text' onIonInput={(e: any) => setNewTaskName(e.target.value)}/>
+              <IonButton type='submit' slot='end' disabled={!newTaskName}>
+                Start New Task
+              </IonButton>
+            </IonItem>
+          </form>
+          {groups.map(g => <SessionListItem key={g[0].task} sessions={g} now={now} onClick={() => handleSessionClick(g[0])} />)}
         </IonList>
       </IonContent>
     </IonPage>
