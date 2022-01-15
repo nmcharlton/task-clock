@@ -6,9 +6,10 @@ import { ModelInit, MutableModel, PersistentModelConstructor } from "@aws-amplif
 
 export declare class Session {
   readonly id: string;
-  readonly start_time?: string;
-  readonly end_time?: string;
   readonly task?: string;
+  readonly date?: string;
+  readonly start?: string;
+  readonly end?: string;
   constructor(init: ModelInit<Session>);
   static copyOf(source: Session, mutator: (draft: MutableModel<Session>) => MutableModel<Session> | void): Session;
 }
