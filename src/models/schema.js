@@ -10,24 +10,31 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "start_time": {
-                    "name": "start_time",
-                    "isArray": false,
-                    "type": "AWSDateTime",
-                    "isRequired": true,
-                    "attributes": []
-                },
-                "end_time": {
-                    "name": "end_time",
-                    "isArray": false,
-                    "type": "AWSDateTime",
-                    "isRequired": false,
-                    "attributes": []
-                },
                 "task": {
                     "name": "task",
                     "isArray": false,
                     "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "end": {
+                    "name": "end",
+                    "isArray": false,
+                    "type": "AWSTime",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "start": {
+                    "name": "start",
+                    "isArray": false,
+                    "type": "AWSTime",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "date": {
+                    "name": "date",
+                    "isArray": false,
+                    "type": "AWSDate",
                     "isRequired": false,
                     "attributes": []
                 }
@@ -60,5 +67,5 @@ export const schema = {
     },
     "enums": {},
     "nonModels": {},
-    "version": "e5729c5ccfd59125f512b2deb2d5210a"
+    "version": "860caf5be1f1ea04e437e706a9648cce"
 };
