@@ -68,7 +68,8 @@
   },
   "devDependencies": {
     "@capacitor/cli": "3.3.4",
-    "@types/luxon": "^2.0.9"
+    "@types/luxon": "^2.0.9",
+    "mini-css-extract-plugin": "2.4.5"
   },
   "description": "An Ionic project"
 }

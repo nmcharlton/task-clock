@@ -1,5 +1,5 @@
 import SessionListItem from '../components/SessionListItem';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Session } from '../models';
 import { getSessions, startSession, endSession } from '../data/sessions';
 import {
@@ -26,7 +26,20 @@ const Home: React.FC = () => {
   const [now, setNow] = useState<DateTime>(DateTime.now());
   const [newTaskName, setNewTaskName] = useState<string>('');
 
-  useEffect(() => {
+  useIonViewWillEnter(() => {
+    refreshSessions();
+    setInterval(() => {
+      setNow(DateTime.now());
+    }, 1000);
+  });
+
+  const refresh = (e: CustomEvent) => {
+    refreshSessions().then(() => {
+      e.detail.complete();
+    });
+  };
+
+  const updateGroups = () => {
     const tasks = sessions.reduce((output: string[], s) => {
       if (s?.task && output.indexOf(s.task) === -1) {
         output.push(s.task);
@@ -41,20 +54,7 @@ const Home: React.FC = () => {
       }
       return output;
     }, tasks.map(() => []))));
-  }, [sessions]);
-
-  useIonViewWillEnter(() => {
-    refreshSessions();
-    setInterval(() => {
-      setNow(DateTime.now());
-    }, 1000);
-  });
-
-  const refresh = (e: CustomEvent) => {
-    refreshSessions().then(() => {
-      e.detail.complete();
-    });
-  };
+  }
 
   const refreshSessions = () : Promise<void> => {
     return getSessions().then((data) => {
@@ -64,6 +64,8 @@ const Home: React.FC = () => {
         if (a.end > b.end) return -1;
         return 1;
       }));
+
+      updateGroups();
     });
   }
 
