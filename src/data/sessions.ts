@@ -39,7 +39,7 @@ export const getSessions = async () : Promise<Session[]> => {
 
 export const startSession = async (task? : string) : Promise<Session> => {
 
-  const liveSessions = await DataStore.query(Session, s => s.end('notContains', '-'));
+  const liveSessions = await DataStore.query(Session, s => s.end('notContains', ':'));
   liveSessions.forEach((s) => {
     if (!s.end) {
       endSession(s);
