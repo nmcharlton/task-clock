@@ -1,4 +1,5 @@
 import { DataStore } from '@aws-amplify/datastore';
+import { DateTime } from 'luxon';
 import { Session } from '../models';
 
 const dataStore = true;
@@ -28,10 +29,9 @@ let sessions: Session[] = [{
   start: '10:07:33+00:00',
 }];
 
-export const getSessions = async () : Promise<Session[]> => {
+export const getSessions = async (date: string = DateTime.now().toISODate()) : Promise<Session[]> => {
   if (dataStore) {
-    const today = (new Date()).toISOString().split('T')[0];
-    return DataStore.query(Session, s => s.date('eq', today));
+    return DataStore.query(Session, s => s.date('eq', date));
   } else {
     return Promise.resolve(sessions as Session[]);
   }
@@ -46,11 +46,13 @@ export const startSession = async (task? : string) : Promise<Session> => {
     }
   });
 
-  const [date, time] = new Date().toISOString().split('T');
+  const now = DateTime.now();
+  const date = now.toISODate();
+  const start = now.toISOTime();
   const newSession = {
-    id: (Number(sessions[sessions.length-1].id)+1).toString(),
+    id: now.valueOf().toString(),
     date,
-    start: time,
+    start,
     task
   };
 
@@ -58,7 +60,7 @@ export const startSession = async (task? : string) : Promise<Session> => {
     return DataStore.save(
       new Session({
         date,
-    	  start: time,
+    	  start,
     	  task
       })
     );
@@ -69,17 +71,17 @@ export const startSession = async (task? : string) : Promise<Session> => {
 };
 
 export const endSession = async (session : Session) : Promise<Session> => {
-  const time = new Date().toISOString().split('T')[1];
+  const end = DateTime.now().toISOTime();
 
   if (dataStore) {
     return DataStore.save(
       Session.copyOf(session, updated => {
-        updated.end = time;
+        updated.end = end;
       })
     );
   } else {
     const index = sessions.findIndex(s => s.id === session.id);
-    sessions[index] = {...sessions[index], end: time};
+    sessions[index] = {...sessions[index], end};
     return Promise.resolve(sessions[index]);
   }
 };
