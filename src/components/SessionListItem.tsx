@@ -30,9 +30,9 @@ const SessionListItem: React.FC<SessionListItemProps> = ({ sessions, now, onClic
       <div slot="start" className="dot dot-unread"></div>
       <IonLabel className="ion-text-wrap">
         <h2>
-          {lastSession.task}
+          {lastSession.task} &#8226; {duration.toFormat(`h'h' m'm' s's'`)}
           <span className="date">
-            <IonNote>{duration.toFormat(`h'h' m'm' s's'`)}</IonNote>
+            <IonNote>{DateTime.fromISO(`${lastSession.date}`).toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)}</IonNote>
           </span>
         </h2>
         <h3>
