@@ -1,5 +1,5 @@
 import SessionListItem from '../components/SessionListItem';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Session } from '../models';
 import { getSessions, startSession, endSession } from '../data/sessions';
 import {
@@ -26,6 +26,23 @@ const Home: React.FC = () => {
   const [now, setNow] = useState<DateTime>(DateTime.now());
   const [newTaskName, setNewTaskName] = useState<string>('');
 
+  useEffect(() => {
+    const tasks = sessions.reduce((output: string[], s: Session) => {
+      if (s?.task && output.indexOf(s.task) === -1) {
+        output.push(s.task);
+      }
+      return output;
+    }, []);
+
+    setGroups(Object.values(sessions.reduce((output: Session[][], s: Session) => {
+      const index = tasks.indexOf(s.task as any);
+      if (index >= 0) {
+        output[index].push(s);
+      }
+      return output;
+    }, tasks.map(() => []))));
+  }, [sessions])
+
   useIonViewWillEnter(() => {
     refreshSessions();
     setInterval(() => {
@@ -33,58 +50,34 @@ const Home: React.FC = () => {
     }, 1000);
   });
 
-  const refresh = (e: CustomEvent) => {
-    refreshSessions().then(() => {
-      e.detail.complete();
-    });
+  const refresh = async (e: CustomEvent) => {
+    await refreshSessions();
+    e.detail.complete();
   };
 
-  const updateGroups = () => {
-    const tasks = sessions.reduce((output: string[], s) => {
-      if (s?.task && output.indexOf(s.task) === -1) {
-        output.push(s.task);
-      }
-      return output;
-    }, []);
-
-    setGroups(Object.values(sessions.reduce((output: Session[][], s) => {
-      const index = tasks.indexOf(s.task as any);
-      if (index >= 0) {
-        output[index].push(s);
-      }
-      return output;
-    }, tasks.map(() => []))));
+  const refreshSessions = async () : Promise<void> => {
+    const data: Session[] = await getSessions();
+    setSessions(data.sort((a: Session, b: Session)=> {
+      if (!a.end) return -1;
+      if (!b.end) return 1;
+      if (a.end > b.end) return -1;
+      return 1;
+    }));
   }
 
-  const refreshSessions = () : Promise<void> => {
-    return getSessions().then((data) => {
-      setSessions(data.sort((a: Session, b: Session)=> {
-        if (!a.end) return -1;
-        if (!b.end) return 1;
-        if (a.end > b.end) return -1;
-        return 1;
-      }));
-
-      updateGroups();
-    });
-  }
-
-  const handleSessionClick = (session: Session) => {
-    let fn = Promise.resolve();
+  const handleSessionClick = async (session: Session) => {
     if (session.end) {
-      startSession(session.task);
+      await startSession(session.task);
     } else {
-      endSession(session);
+      await endSession(session);
     }
-
-    fn.then(() => {
-      refreshSessions();
-    })
+    refreshSessions();
   }
 
-  const handleStartNewTask = () => {
-    startSession(newTaskName).then(() => refreshSessions());
+  const handleStartNewTask = async () => {
     setNewTaskName('');
+    await startSession(newTaskName);
+    refreshSessions();
   }
 
   return (

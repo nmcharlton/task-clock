@@ -54,8 +54,6 @@ export const startSession = async (task? : string) : Promise<Session> => {
     task
   };
 
-  sessions.push(newSession);
-
   if (dataStore) {
     return DataStore.save(
       new Session({
@@ -65,15 +63,13 @@ export const startSession = async (task? : string) : Promise<Session> => {
       })
     );
   } else {
+    sessions.push(newSession);
     return Promise.resolve(newSession);
   }
 };
 
 export const endSession = async (session : Session) : Promise<Session> => {
   const time = new Date().toISOString().split('T')[1];
-
-  const index = sessions.findIndex(s => s.id === session.id);
-  sessions[index] = {...sessions[index], end: time};
 
   if (dataStore) {
     return DataStore.save(
@@ -82,6 +78,8 @@ export const endSession = async (session : Session) : Promise<Session> => {
       })
     );
   } else {
+    const index = sessions.findIndex(s => s.id === session.id);
+    sessions[index] = {...sessions[index], end: time};
     return Promise.resolve(sessions[index]);
   }
 };
